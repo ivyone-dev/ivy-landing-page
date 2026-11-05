@@ -147,42 +147,62 @@ const FIRM_TYPES = [
 const AUM = ["Under $250M", "$250M – $1B", "$1B – $5B", "Over $5B", "Prefer not to say"];
 const SOURCES = ["A colleague or friend", "LinkedIn", "Search", "An event", "Interplay", "Other"];
 
+const CALENDLY = "https://calendly.com/ivyone/demo";
+
 function DemoModal({ onClose }: { onClose: () => void }) {
-  const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    // Coming back from Calendly with the browser's Back button restores this
+    // page from the back/forward cache — re-enable the button.
+    const onShow = (e: PageTransitionEvent) => e.persisted && setSending(false);
     document.addEventListener("keydown", onKey);
+    window.addEventListener("pageshow", onShow);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
+      window.removeEventListener("pageshow", onShow);
       document.body.style.overflow = prev;
     };
   }, [onClose]);
 
+  // Log the lead (email to Leon + HubSpot deal), then send the visitor to
+  // Calendly to pick a time. Calendly opens whatever happens to the lead
+  // request — after 6s, or on an error, we go anyway; keepalive lets a slow
+  // request finish after the page has navigated away.
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    setState("sending");
+    const get = (k: string) => String(f.get(k) ?? "").trim();
+    setSending(true);
     try {
-      const res = await fetch("/api/demo-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: f.get("firstName"),
-          lastName: f.get("lastName"),
-          email: f.get("email"),
-          company: f.get("company"),
-          companyType: f.get("companyType"),
-          companySize: f.get("companySize"),
-          source: f.get("source"),
+      await Promise.race([
+        fetch("/api/demo-request", {
+          method: "POST",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName: get("firstName"),
+            lastName: get("lastName"),
+            email: get("email"),
+            company: get("company"),
+            companyType: get("companyType"),
+            companySize: get("companySize"),
+            source: get("source"),
+          }),
         }),
-      });
-      setState(res.ok ? "done" : "error");
+        new Promise((resolve) => setTimeout(resolve, 6000)),
+      ]);
     } catch {
-      setState("error");
+      /* still go to Calendly */
     }
+    // Prefill Calendly's booking form so they don't type it twice.
+    const url = new URL(CALENDLY);
+    url.searchParams.set("name", `${get("firstName")} ${get("lastName")}`.trim());
+    url.searchParams.set("email", get("email"));
+    window.location.assign(url.toString());
   }
 
   return (
@@ -193,77 +213,56 @@ function DemoModal({ onClose }: { onClose: () => void }) {
         </button>
 
         <div className="modal__form">
-          {state === "done" ? (
-            <>
-              <h2 className="d2">
-                Thank you — <em className="acc">we&rsquo;ll be in touch</em>.
-              </h2>
-              <p className="body" style={{ marginTop: 18 }}>
-                One of us will reply within a business day to find a time. If it&rsquo;s urgent, write to{" "}
-                <a href="mailto:hello@ivy.one" style={{ color: "var(--ivy-700)", fontWeight: 500 }}>hello@ivy.one</a>.
-              </p>
-              <button type="button" className="btn btn--secondary" style={{ marginTop: 32 }} onClick={onClose}>
-                Close
-              </button>
-            </>
-          ) : (
-            <form onSubmit={submit}>
-              <h2 className="d2">
-                See why leading family
-                <br />
-                offices <em className="acc">run on Ivy</em>.
-              </h2>
-              <p className="body" style={{ marginTop: 18, maxWidth: "46ch" }}>
-                Ivy is your new favorite employee — built around your workflows, not a generic chat
-                window. Book a demo and see it run on your own operating model.
-              </p>
+          <form onSubmit={submit}>
+            <h2 className="d2">
+              See why leading family
+              <br />
+              offices <em className="acc">run on Ivy</em>.
+            </h2>
+            <p className="body" style={{ marginTop: 18, maxWidth: "46ch" }}>
+              Ivy is your new favorite employee — built around your workflows, not a generic chat
+              window. Book a demo and see it run on your own operating model.
+            </p>
 
-              <div style={{ marginTop: 34, display: "grid", gap: 14 }}>
-                <div className="row2">
-                  <input className="field" name="firstName" placeholder="First name*" required autoComplete="given-name" />
-                  <input className="field" name="lastName" placeholder="Last name*" required autoComplete="family-name" />
-                </div>
-                <input className="field" name="email" type="email" placeholder="Work email*" required autoComplete="email" />
-                <input className="field" name="company" placeholder="Firm*" required autoComplete="organization" />
-                <div className="row2">
-                  <select className="field" name="companyType" required defaultValue="">
-                    <option value="" disabled>Firm type*</option>
-                    {FIRM_TYPES.map((o) => <option key={o}>{o}</option>)}
-                  </select>
-                  <select className="field" name="companySize" required defaultValue="">
-                    <option value="" disabled>Assets under management*</option>
-                    {AUM.map((o) => <option key={o}>{o}</option>)}
-                  </select>
-                </div>
-                <select className="field" name="source" required defaultValue="">
-                  <option value="" disabled>How did you hear about us?*</option>
-                  {SOURCES.map((o) => <option key={o}>{o}</option>)}
+            <div style={{ marginTop: 34, display: "grid", gap: 14 }}>
+              <div className="row2">
+                <input className="field" name="firstName" placeholder="First name*" required autoComplete="given-name" />
+                <input className="field" name="lastName" placeholder="Last name*" required autoComplete="family-name" />
+              </div>
+              <input className="field" name="email" type="email" placeholder="Work email*" required autoComplete="email" />
+              <input className="field" name="company" placeholder="Firm*" required autoComplete="organization" />
+              <div className="row2">
+                <select className="field" name="companyType" required defaultValue="">
+                  <option value="" disabled>Firm type*</option>
+                  {FIRM_TYPES.map((o) => <option key={o}>{o}</option>)}
+                </select>
+                <select className="field" name="companySize" required defaultValue="">
+                  <option value="" disabled>Assets under management*</option>
+                  {AUM.map((o) => <option key={o}>{o}</option>)}
                 </select>
               </div>
+              <select className="field" name="source" required defaultValue="">
+                <option value="" disabled>How did you hear about us?*</option>
+                {SOURCES.map((o) => <option key={o}>{o}</option>)}
+              </select>
+            </div>
 
-              <label className="consent" style={{ marginTop: 22 }}>
-                <input type="checkbox" required />
-                <span>
-                  I agree to Ivy&rsquo;s{" "}
-                  <Link href="/privacy" style={{ color: "var(--ivy-700)", textDecoration: "underline" }}>Privacy Policy</Link>
-                </span>
-              </label>
+            <label className="consent" style={{ marginTop: 22 }}>
+              <input type="checkbox" required />
+              <span>
+                I agree to Ivy&rsquo;s{" "}
+                <Link href="/privacy" style={{ color: "var(--ivy-700)", textDecoration: "underline" }}>Privacy Policy</Link>
+              </span>
+            </label>
 
-              <button type="submit" className="btn btn--primary" style={{ width: "100%", marginTop: 26 }} disabled={state === "sending"}>
-                {state === "sending" ? "Sending…" : "Request demo"}
-              </button>
+            <button type="submit" className="btn btn--primary" style={{ width: "100%", marginTop: 26 }} disabled={sending}>
+              {sending ? "Opening calendar…" : "Get started"}
+            </button>
 
-              {state === "error" && (
-                <p className="small" style={{ marginTop: 14, color: "var(--down)" }}>
-                  That didn&rsquo;t go through. Please email hello@ivy.one and we&rsquo;ll pick it up.
-                </p>
-              )}
-
-              <p className="mono" style={{ marginTop: 26 }}>
-                Trusted by leading family offices &nbsp;·&nbsp; Reply within one business day
-              </p>
-            </form>
-          )}
+            <p className="mono" style={{ marginTop: 26 }}>
+              Trusted by leading family offices &nbsp;·&nbsp; Pick a time on the next step
+            </p>
+          </form>
         </div>
 
         <figure className="modal__aside">

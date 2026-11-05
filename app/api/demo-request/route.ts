@@ -83,9 +83,9 @@ async function sendEmail(p: Payload) {
       from: `"ivy.one" <${SMTP_USER}>`,
       to: "leon@ivy.one",
       replyTo: p.email,
-      subject: "REQUEST A DEMO",
+      subject: `NEW WEBSITE LEAD — ${p.company}`,
       text: [
-        "New demo request from ivy.one",
+        "New website lead from ivy.one — sent on to Calendly (calendly.com/ivyone/demo) to book a time.",
         "",
         `First name: ${p.firstName}`,
         `Last name: ${p.lastName}`,
@@ -111,9 +111,9 @@ async function createCrmRecords(token: string, p: Payload) {
     ]);
 
     const properties: Record<string, string> = {
-      dealname: `Demo request — ${p.company}`,
+      dealname: `NEW WEBSITE LEAD — ${p.company}`,
       description: [
-        `Demo request from ivy.one`,
+        `New website lead from ivy.one (Get started form → Calendly)`,
         `Name: ${p.firstName} ${p.lastName}`,
         `Work email: ${p.email}`,
         `Company: ${p.company}`,
