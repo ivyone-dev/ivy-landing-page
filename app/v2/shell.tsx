@@ -145,7 +145,7 @@ const FIRM_TYPES = [
   "Other",
 ];
 const AUM = ["Under $250M", "$250M – $1B", "$1B – $5B", "Over $5B", "Prefer not to say"];
-const SOURCES = ["A colleague or friend", "LinkedIn", "Search", "An event", "Interplay", "Other"];
+const SOURCES = ["A colleague or friend", "LinkedIn", "Search", "An event", "Interplay", "3i Member", "Other"];
 
 const CALENDLY = "https://calendly.com/ivyone/demo";
 
