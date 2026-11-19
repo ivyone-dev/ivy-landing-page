@@ -21,7 +21,7 @@ const serif = Instrument_Serif({
 });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--nf-mono" });
 
-const TITLE = "Ivy: The AI Operator for Family Offices";
+const TITLE = "Ivy: The AI Teammate for Family Offices";
 const DESCRIPTION =
   "Ivy is the most capable AI teammate for family offices. She joins your team, learns your firm and gets the work done.";
 

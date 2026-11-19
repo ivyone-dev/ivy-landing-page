@@ -3,7 +3,7 @@ import Shell, { Band, DemoButton } from "./v2/shell";
 import Cycler from "./v2/cycler";
 import HeroVideo from "./v2/hero-video";
 
-const TITLE = "Ivy: The AI Operator for Family Offices";
+const TITLE = "Ivy: The AI Teammate for Family Offices";
 /* Flipped through in the hero headline. "RIAs" rather than "RIA's" — the
    apostrophe would read as a possessive. */
 const SEGMENTS = [
@@ -158,7 +158,7 @@ export default function HomePage({ demoOpen = false }: { demoOpen?: boolean }) {
       <section className="hero2">
         <div className="hero2__top">
           <h1 className="d1 hero2__title">
-            The AI operator<br /> for{" "}
+            The AI teammate<br /> for{" "}
             <em className="acc">
               <Cycler words={SEGMENTS} />
             </em>
