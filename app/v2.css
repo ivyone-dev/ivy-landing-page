@@ -371,9 +371,23 @@
 .trust { font-family:var(--mono); font-weight:500; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); }
 
 /* ---------- modal ---------- */
-.modal { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:24px; background:rgba(4,23,17,.72); backdrop-filter:blur(3px); }
-.modal__card { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 420px; width:min(1160px,100%); max-height:92vh; overflow:auto; background:#fff; border-radius:var(--r-panel); box-shadow:0 24px 60px rgba(4,23,17,.45); }
-.modal__form { padding:48px 56px 40px; }
+.modal { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:16px; background:rgba(4,23,17,.72); backdrop-filter:blur(3px); }
+.modal__card { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 380px; width:min(1040px,100%); max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px); overflow:auto; background:#fff; border-radius:var(--r-panel); box-shadow:0 24px 60px rgba(4,23,17,.45); }
+.modal__form { padding:36px 44px 28px; }
+/* compact type + controls so the whole form fits a 13" laptop (~1440×780 viewport) */
+.modal .d2 { font-size:clamp(30px,3vw,38px); }
+.modal .body { font-size:16px; line-height:1.55; }
+.modal .field { height:46px; padding-inline:16px; font-size:15.5px; }
+.modal select.field { background-position:right 14px center; }
+.modal .row2 { gap:10px; }
+.modal .consent { font-size:14.5px; }
+.modal .consent input { width:18px; height:18px; }
+.modal .btn { height:50px; }
+@media (max-height:720px) {
+  .modal__form { padding:28px 40px 22px; }
+  .modal .d2 { font-size:32px; }
+  .modal .field { height:44px; }
+}
 .modal__aside { position:relative; background:#6B6158; overflow:hidden; }
 .modal__aside img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .modal__aside figcaption { position:absolute; left:32px; bottom:28px; z-index:1; font-family:var(--mono); font-weight:500; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:rgba(244,242,237,.78); }

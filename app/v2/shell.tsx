@@ -219,12 +219,12 @@ function DemoModal({ onClose }: { onClose: () => void }) {
               <br />
               offices <em className="acc">run on Ivy</em>.
             </h2>
-            <p className="body" style={{ marginTop: 18, maxWidth: "46ch" }}>
+            <p className="body" style={{ marginTop: 12, maxWidth: "52ch" }}>
               Ivy is your new favorite employee — built around your workflows, not a generic chat
               window. Book a demo and see it run on your own operating model.
             </p>
 
-            <div style={{ marginTop: 34, display: "grid", gap: 14 }}>
+            <div style={{ marginTop: 22, display: "grid", gap: 10 }}>
               <div className="row2">
                 <input className="field" name="firstName" placeholder="First name*" required autoComplete="given-name" />
                 <input className="field" name="lastName" placeholder="Last name*" required autoComplete="family-name" />
@@ -247,7 +247,7 @@ function DemoModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
 
-            <label className="consent" style={{ marginTop: 22 }}>
+            <label className="consent" style={{ marginTop: 16 }}>
               <input type="checkbox" required />
               <span>
                 I agree to Ivy&rsquo;s{" "}
@@ -255,11 +255,11 @@ function DemoModal({ onClose }: { onClose: () => void }) {
               </span>
             </label>
 
-            <button type="submit" className="btn btn--primary" style={{ width: "100%", marginTop: 26 }} disabled={sending}>
+            <button type="submit" className="btn btn--primary" style={{ width: "100%", marginTop: 18 }} disabled={sending}>
               {sending ? "Opening calendar…" : "Get started"}
             </button>
 
-            <p className="mono" style={{ marginTop: 26 }}>
+            <p className="mono" style={{ marginTop: 16 }}>
               Trusted by leading family offices &nbsp;·&nbsp; Pick a time on the next step
             </p>
           </form>
